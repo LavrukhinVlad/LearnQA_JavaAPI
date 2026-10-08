@@ -14,14 +14,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <aspectj.version>1.8.10</aspectj.version>
+        <aspectj.version>1.9.24</aspectj.version>
+        <allure.version>2.29.1</allure.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.8.1</version>
+            <version>5.10.3</version>
         </dependency>
 
         <dependency>
@@ -39,13 +40,13 @@
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-junit5</artifactId>
-            <version>2.13.0</version>
+            <version>${allure.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-rest-assured</artifactId>
-            <version>2.19.0</version>
+            <version>${allure.version}</version>
         </dependency>
     </dependencies>
 
@@ -92,9 +93,10 @@
                 <plugin>
                     <groupId>io.qameta.allure</groupId>
                     <artifactId>allure-maven</artifactId>
-                    <version>LATEST_VERSION</version>
+                    <version>2.15.2</version>
                     <configuration>
-                        <reportVersion>2.4.1</reportVersion>
+                        <reportVersion>2.46.1</reportVersion>
+                        <resultsDirectory>${project.basedir}/allure-results</resultsDirectory>
                     </configuration>
                 </plugin>
                 <plugin>
