@@ -7,7 +7,7 @@ import io.restassured.response.Response;
 
 import java.util.Map;
 
-import static io.restassured.path.json.JsonPath.given;
+import static io.restassured.RestAssured.given;
 
 public class ApiCoreRequests {
     @Step("Make a Get-request with token and auth cookie")

@@ -30,7 +30,7 @@ public class UserGetTest extends BaseTestCase {
 
         Response responseGetAuth = RestAssured
                 .given()
-                .body(authdata)
+                .body(authData)
                 .post("https://playground.learnqa.ru/api/user/")
                 .andReturn();
 
