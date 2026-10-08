@@ -1,15 +1,27 @@
 package tests;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import lib.ApiCoreRequests;
 import lib.Assertions;
 import lib.BaseTestCase;
 import lib.DataGenerator;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Epic("Автоматизация тестирования REST API на Java")
+@Feature("Получение данных пользователя (GET /user/{id})")
+@Owner("Vladislav Lavrukhin")
 public class UserGetTest extends BaseTestCase {
 
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
@@ -18,6 +30,12 @@ public class UserGetTest extends BaseTestCase {
     private final String REGISTER_URL = "https://playground.learnqa.ru/api/user";
 
     @Test
+    @Story("Просмотр данных без авторизации")
+    @DisplayName("Неавторизованный запрос возвращает только username")
+    @Description("Без авторизации доступно только публичное поле username.")
+    @Severity(SeverityLevel.NORMAL)
+    @Tag("negative")
+    @Tag("user-get")
     public void testGetUserDataNotAuth() {
         Response responseUserData = apiCoreRequests.makeGetRequestWithoutToken(USER_URL + "2");
 
@@ -28,6 +46,12 @@ public class UserGetTest extends BaseTestCase {
     }
 
     @Test
+    @Story("Просмотр своих данных")
+    @DisplayName("Авторизованный пользователь видит все свои поля")
+    @Description("При запросе своих данных возвращаются username, firstName, lastName, email.")
+    @Severity(SeverityLevel.CRITICAL)
+    @Tag("positive")
+    @Tag("user-get")
     public void testGetUserDetailsAuthAsSameUser() {
         Map<String, String> authData = new HashMap<>();
         authData.put("email", "vinkotov@example.com");
@@ -46,6 +70,12 @@ public class UserGetTest extends BaseTestCase {
 
     // Ex16: authorize as one user but request another user's data -> only username must be visible
     @Test
+    @Story("Просмотр чужих данных")
+    @DisplayName("Чужие данные ограничены полем username")
+    @Description("Авторизованный пользователь не должен видеть приватные поля другого пользователя.")
+    @Severity(SeverityLevel.CRITICAL)
+    @Tag("security")
+    @Tag("user-get")
     public void testGetUserDetailsAuthAsOtherUser() {
         // Register another user to request data of
         Map<String, String> otherUserData = DataGenerator.getRegistrationData();

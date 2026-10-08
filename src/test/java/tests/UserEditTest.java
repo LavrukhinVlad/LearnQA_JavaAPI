@@ -1,15 +1,28 @@
 package tests;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import lib.ApiCoreRequests;
 import lib.Assertions;
 import lib.BaseTestCase;
 import lib.DataGenerator;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Epic("Автоматизация тестирования REST API на Java")
+@Feature("Редактирование пользователя (PUT /user/{id})")
+@Owner("Vladislav Lavrukhin")
 public class UserEditTest extends BaseTestCase {
 
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
@@ -37,8 +50,13 @@ public class UserEditTest extends BaseTestCase {
         return auth;
     }
 
-    // Positive baseline from the lesson: a user edits their own firstName.
     @Test
+    @Story("Позитивное редактирование")
+    @DisplayName("Пользователь редактирует своё имя")
+    @Description("Авторизованный пользователь может изменить собственный firstName.")
+    @Severity(SeverityLevel.BLOCKER)
+    @Tag("positive")
+    @Tag("user-edit")
     public void testEditJustCreatedUser() {
         Map<String, String> userData = registerUser();
         Map<String, String> auth = loginAs(userData);
@@ -52,8 +70,12 @@ public class UserEditTest extends BaseTestCase {
         Assertions.assertJsonByName(responseUserData, "firstName", newName);
     }
 
-    // Ex17 #1: try to edit a user while unauthorized.
     @Test
+    @Story("Негативное редактирование")
+    @DisplayName("Нельзя редактировать пользователя без авторизации")
+    @Severity(SeverityLevel.CRITICAL)
+    @Tag("negative")
+    @Tag("security")
     public void testEditUserNotAuth() {
         Map<String, String> userData = registerUser();
 
@@ -65,8 +87,14 @@ public class UserEditTest extends BaseTestCase {
         Assertions.assertJsonByName(responseEditUser, "error", "Auth token not supplied");
     }
 
-    // Ex17 #2: try to edit a user while authorized as a DIFFERENT user.
     @Test
+    @Story("Негативное редактирование")
+    @DisplayName("Нельзя редактировать данные другого пользователя")
+    @Description("Под авторизацией одного пользователя запрещено менять данные другого.")
+    @Severity(SeverityLevel.CRITICAL)
+    @Issue("DEV-EDIT-OWNERSHIP")
+    @Tag("negative")
+    @Tag("security")
     public void testEditUserAuthAsAnotherUser() {
         Map<String, String> targetUser = registerUser();
         Map<String, String> anotherUser = registerUser();
@@ -80,8 +108,12 @@ public class UserEditTest extends BaseTestCase {
         Assertions.assertJsonByName(responseEditUser, "error", "This user can only edit their own data.");
     }
 
-    // Ex17 #3: as the same user, try to change email to one without the @ symbol.
     @Test
+    @Story("Негативное редактирование")
+    @DisplayName("Нельзя сменить email на значение без @")
+    @Severity(SeverityLevel.NORMAL)
+    @Tag("negative")
+    @Tag("validation")
     public void testEditUserWithIncorrectEmail() {
         Map<String, String> userData = registerUser();
         Map<String, String> auth = loginAs(userData);
@@ -94,8 +126,12 @@ public class UserEditTest extends BaseTestCase {
         Assertions.assertJsonByName(responseEditUser, "error", "Invalid email format");
     }
 
-    // Ex17 #4: as the same user, try to change firstName to a one-character value.
     @Test
+    @Story("Негативное редактирование")
+    @DisplayName("Нельзя сменить firstName на значение в один символ")
+    @Severity(SeverityLevel.NORMAL)
+    @Tag("negative")
+    @Tag("validation")
     public void testEditUserWithShortFirstName() {
         Map<String, String> userData = registerUser();
         Map<String, String> auth = loginAs(userData);

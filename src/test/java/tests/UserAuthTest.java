@@ -1,23 +1,29 @@
 package tests;
 
 import io.qameta.allure.Description;
-import io.restassured.RestAssured;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+import lib.ApiCoreRequests;
+import lib.Assertions;
 import lib.BaseTestCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import lib.Assertions;
-import lib.ApiCoreRequests;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+@Epic("Автоматизация тестирования REST API на Java")
+@Feature("Авторизация пользователя (GET /user/auth)")
+@Owner("Vladislav Lavrukhin")
 public class UserAuthTest extends BaseTestCase {
 
     String cookie;
@@ -40,8 +46,12 @@ public class UserAuthTest extends BaseTestCase {
     }
 
     @Test
-    @Description("This test successfully authorize user by email and password")
-    @DisplayName("Test positive auth user")
+    @Story("Позитивная авторизация")
+    @Description("Успешная авторизация пользователя по email и паролю")
+    @DisplayName("Позитивная авторизация пользователя")
+    @Severity(SeverityLevel.BLOCKER)
+    @Tag("positive")
+    @Tag("auth")
     public void testAuthUser() {
         Response responseCheckAuth = apiCoreRequests
                 .makeGetRequest(
@@ -53,8 +63,12 @@ public class UserAuthTest extends BaseTestCase {
         Assertions.assertJsonByName(responseCheckAuth, "user_id", this.userIdOnAuth);
     }
 
-    @Description("This test checks authorization status w/o sending auth cookie or token")
-    @DisplayName("Test negative auth user")
+    @Story("Негативная авторизация")
+    @Description("Проверка статуса авторизации без отправки cookie или токена")
+    @DisplayName("Негативная авторизация пользователя")
+    @Severity(SeverityLevel.CRITICAL)
+    @Tag("negative")
+    @Tag("auth")
     @ParameterizedTest
     @ValueSource(strings = {"cookie", "headers"})
     public void testNegativeAuthUser(String condition){

@@ -1,15 +1,28 @@
 package tests;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Issue;
+import io.qameta.allure.Owner;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
 import io.restassured.response.Response;
 import lib.ApiCoreRequests;
 import lib.Assertions;
 import lib.BaseTestCase;
 import lib.DataGenerator;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Epic("Автоматизация тестирования REST API на Java")
+@Feature("Удаление пользователя (DELETE /user/{id})")
+@Owner("Vladislav Lavrukhin")
 public class UserDeleteTest extends BaseTestCase {
 
     private final ApiCoreRequests apiCoreRequests = new ApiCoreRequests();
@@ -37,8 +50,13 @@ public class UserDeleteTest extends BaseTestCase {
         return auth;
     }
 
-    // Ex18 #1: the system must not let you delete the protected test user with ID 2.
     @Test
+    @Story("Защита тестовых пользователей")
+    @DisplayName("Нельзя удалить защищённого пользователя с ID 2")
+    @Description("Удаление тестовых пользователей с ID 1-5 должно быть запрещено.")
+    @Severity(SeverityLevel.CRITICAL)
+    @Tag("negative")
+    @Tag("user-delete")
     public void testDeleteProtectedUser() {
         Map<String, String> auth = loginAs("vinkotov@example.com", "1234");
 
@@ -48,8 +66,13 @@ public class UserDeleteTest extends BaseTestCase {
         Assertions.assertJsonByName(responseDelete, "error", "Please, do not delete test users with ID 1, 2, 3, 4 or 5.");
     }
 
-    // Ex18 #2: positive - create a user, authorize as them, delete, then confirm the user is gone.
     @Test
+    @Story("Позитивное удаление")
+    @DisplayName("Пользователь удаляет сам себя, после чего не находится")
+    @Description("После удаления своего аккаунта повторный GET по ID возвращает 404 User not found.")
+    @Severity(SeverityLevel.BLOCKER)
+    @Tag("positive")
+    @Tag("user-delete")
     public void testDeleteJustCreatedUser() {
         Map<String, String> userData = registerUser();
         Map<String, String> auth = loginAs(userData.get("email"), userData.get("password"));
@@ -62,8 +85,14 @@ public class UserDeleteTest extends BaseTestCase {
         Assertions.assertResponseTextEquals(responseUserData, "User not found");
     }
 
-    // Ex18 #3: negative - try to delete a user while authorized as a DIFFERENT user.
     @Test
+    @Story("Негативное удаление")
+    @DisplayName("Нельзя удалить другого пользователя")
+    @Description("Под авторизацией одного пользователя запрещено удалять аккаунт другого.")
+    @Severity(SeverityLevel.CRITICAL)
+    @Issue("DEV-DELETE-OWNERSHIP")
+    @Tag("negative")
+    @Tag("security")
     public void testDeleteUserAuthAsAnotherUser() {
         Map<String, String> targetUser = registerUser();
         Map<String, String> anotherUser = registerUser();
