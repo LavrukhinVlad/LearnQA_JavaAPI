@@ -7,7 +7,8 @@ import java.util.Map;
 public class DataGenerator {
     public static String getRandomEmail() {
         String timestamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new java.util.Date());
-        return "learnqa" + timestamp + "@example.com";
+        // nanoTime() makes the email unique even for two calls within the same second
+        return "learnqa" + timestamp + System.nanoTime() + "@example.com";
     }
 
     public static Map<String, String> getRegistrationData() {
